@@ -1,0 +1,56 @@
+/**
+ * LeaderCore: creates the two website forms in YOUR Google account and prints the settings to paste into js/site-config.js.
+ *
+ * How to use (about 3 minutes):
+ *  1. Go to https://script.google.com while signed in to the LeaderCore Google account, click "New project".
+ *  2. Delete the sample code, paste this whole file, and click Save.
+ *  3. In the toolbar pick the function  createLeaderCoreForms  and click Run.
+ *  4. Google asks you to authorize the script (it needs Forms and Gmail sending). Approve it.
+ *  5. When it finishes, open View > Logs (or Execution log). Copy the block that starts with  window.LEADERCORE  and send it to Claude
+ *     (or paste it over the contents of js/site-config.js).
+ *
+ * Each form emails you every new response. Run the script only once, or you will get duplicate forms.
+ */
+function createLeaderCoreForms() {
+  var signup = buildForm_('LeaderCore Website Sign-Up', [
+    ['first_name', 'First Name'], ['last_name', 'Last Name'], ['email', 'Email Address']
+  ], 'signup');
+  var book = buildForm_('LeaderCore Free Book Request', [
+    ['first_name', 'First Name'], ['last_name', 'Last Name'], ['street', 'Street Address'],
+    ['city', 'City'], ['state', 'State'], ['zip', 'ZIP Code'], ['email', 'Email Address']
+  ], 'book');
+  var out = 'window.LEADERCORE = {\n  signup: ' + signup + ',\n  book:   ' + book + '\n};';
+  Logger.log('\n' + out);
+}
+
+function buildForm_(title, fields, key) {
+  var form = FormApp.create(title);
+  form.setConfirmationMessage('Thank you!');
+  var items = {};
+  fields.forEach(function (f) {
+    items[f[0]] = form.addTextItem().setTitle(f[1]).setRequired(true);
+  });
+  // A test response with a unique marker in each field reveals each question's entry code.
+  var resp = form.createResponse();
+  fields.forEach(function (f) {
+    resp.withItemResponse(items[f[0]].createResponse('zz_' + f[0]));
+  });
+  var url = resp.toPrefilledUrl();
+  var parts = [];
+  fields.forEach(function (f) {
+    var m = url.match(new RegExp('entry\\.(\\d+)=zz_' + f[0] + '(&|$)'));
+    parts.push('"' + f[0] + '": "' + (m ? 'entry.' + m[1] : 'NOT_FOUND') + '"');
+  });
+  var action = form.getPublishedUrl().replace(/\/viewform.*$/, '/formResponse');
+  // Email every new response to the account that ran this script.
+  ScriptApp.newTrigger('onFormSubmitNotify_').forForm(form).onFormSubmit().create();
+  return '{ action: "' + action + '", fields: { ' + parts.join(', ') + ' } }';
+}
+
+function onFormSubmitNotify_(e) {
+  var form = e.source, lines = [];
+  e.response.getItemResponses().forEach(function (r) {
+    lines.push(r.getItem().getTitle() + ': ' + r.getResponse());
+  });
+  MailApp.sendEmail(Session.getEffectiveUser().getEmail(), 'New response: ' + form.getTitle(), lines.join('\n'));
+}
