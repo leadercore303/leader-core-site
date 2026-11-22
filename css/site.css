@@ -100,11 +100,11 @@ footer.site{background:var(--black);color:#B5B5B5;font-size:.88rem;padding:.7rem
 .form .row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}.form .row3{display:grid;grid-template-columns:2fr 1fr 1fr;gap:1rem}
 @media (max-width:560px){.form .row,.form .row3{grid-template-columns:1fr}}
 .form label{display:grid;gap:.3rem;font-weight:600;font-size:.92rem;color:var(--black)}
-.form input{font:inherit;font-weight:400;padding:.75rem .9rem;border-radius:10px;border:1px solid rgba(10,10,10,.28);background:#fff;color:var(--ink)}
+.form input,.form textarea{font:inherit;font-weight:400;padding:.75rem .9rem;border-radius:10px;border:1px solid rgba(10,10,10,.28);background:#fff;color:var(--ink)}
 .form .btn{justify-self:start;cursor:pointer}.form .fine{font-size:.85rem;color:#4A5E72;margin:0}.form .thanks{color:var(--teal);font-weight:700;margin:0}
 .hp{position:absolute;left:-9999px}
 [hidden]{display:none!important}
-.form,.form label,.form .row>*,.form .row3>*{min-width:0}.form input{width:100%;min-width:0}
+.form,.form label,.form .row>*,.form .row3>*{min-width:0}.form input,.form textarea{width:100%;min-width:0}.form textarea{resize:vertical;min-height:7rem}
 
 /* title box holds the heading only */
 .titlebox h1{margin:0}
