@@ -16,7 +16,7 @@
       var d=new URLSearchParams();try{names.forEach(function(k){d.append(fl[k],f.elements[k].value);});}catch(err){t.textContent='Something went wrong. Please try again.';t.hidden=false;return;}
       /* Google Forms sends no readable reply to other websites, so the request is sent and treated as done. */
       fetch(c.action,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:d.toString()})
-        .then(function(){t.textContent=f.getAttribute('data-form')==='book'?'Thank you! We will be in touch.':'Thank you!';t.hidden=false;f.reset();})
+        .then(function(){t.textContent=f.getAttribute('data-form')!=='signup'?'Thank you! We will be in touch.':'Thank you!';t.hidden=false;f.reset();})
         .catch(function(){t.textContent='Something went wrong. Please try again.';t.hidden=false;});
     });
   });
